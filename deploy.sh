@@ -1,6 +1,8 @@
-#!/user/bin/env bash 
+#!/usr/bin/env bash 
 
-# copy python files over 
+mpremote fs cp -r radiacode :/radiacode
+
+# copy main file over 
 mpremote fs cp main.py :main.py
 
 # run main 

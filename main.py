@@ -1,36 +1,34 @@
 import machine
 import time
-import aioble
-import asyncio
 
-print(machine.freq())
+from radiacode import RadiaCode
+from radiacode.transports.bluetooth import DeviceNotFound as DeviceNotFoundBT
 
-led = machine.Pin("LED", machine.Pin.OUT)
+BLUETOOTH_MAC = "52:43:06:60:17:dd"
 
+print(f'Connecting to Radiacode via Bluetooth (MAC address: {BLUETOOTH_MAC})')
 
-async def bt_scan_print():
-  async with aioble.scan(duration_ms=5000) as scanner:
-    async for result in scanner:
-      print(result, result.name(), result.rssi, result.services())
+while True: 
+  try: 
+    rc = RadiaCode(bluetooth_mac=BLUETOOTH_MAC)
+  except DeviceNotFoundBT as e:
+    print(e)
+    continue 
 
-async def bt_scan():
-  results = []
-  seen_addr = set()
-  async with aioble.scan(duration_ms=5000, interval_us=30000, window_us=30000, active=True) as scanner:
-    async for result in scanner: 
-      if result.name() is not None and result.name() != "Seos" and result.device.addr not in seen_addr:
-        results.append(result)
-        seen_addr.add(result.device.addr)
+  serial = rc.serial_number()
+  print(f'### Serial number: {serial}')
+  print('--------')
 
-  return results
+  fw_version = rc.fw_version()
+  print(f'### Firmware: {fw_version}')
+  print('--------')
 
-async def main():
+  spectrum = rc.spectrum()
+  print(f'### Spectrum: {spectrum}')
+  print('--------')
+
+  print('### DataBuf:')
   while True:
-    results = await bt_scan()
-    print("\nScan Complete, Results: ")
-    for res in results:
-      print(res.name(), res.device.addr_hex())
-    time.sleep(10)
-
-
-asyncio.run(main())
+      for v in rc.data_buf():
+          print(v.dt.isoformat(), v)
+      time.sleep(2)

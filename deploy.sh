@@ -2,7 +2,7 @@
 
 mpremote fs cp -r radiacode :/
 
-mpremote fs cp datetime.py :datetime.py
+mpremote fs cp -r lib :/
 
 # copy main file over 
 mpremote fs cp main.py :main.py

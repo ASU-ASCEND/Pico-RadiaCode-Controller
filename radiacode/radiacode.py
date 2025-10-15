@@ -8,7 +8,7 @@ spectrum analysis.
 import datetime
 import platform
 import struct
-from typing import Optional
+# from typing import Optional
 
 from radiacode.bytes_buffer import BytesBuffer
 from radiacode.decoders.databuf import decode_VS_DATA_BUF

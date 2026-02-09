@@ -90,11 +90,15 @@ class RadiaCode:
             self._connection = Usb(serial_number=serial_number)
 
         # init
+        print("init")
         self.execute(COMMAND.SET_EXCHANGE, b'\x01\xff\x12\xff')
+        print("set_local_time")
         self.set_local_time(datetime.datetime.now())
+        print("device_time")
         self.device_time(0)
         self._base_time = datetime.datetime.now() + datetime.timedelta(seconds=128)
 
+        print("firmware")
         (_, (vmaj, vmin, _)) = self.fw_version()
         if ignore_firmware_compatibility_check is False and vmaj < 4 or (vmaj == 4 and vmin < 8):
             raise Exception(
@@ -118,6 +122,8 @@ class RadiaCode:
         request = req_header + (args or b'')
         full_request = struct.pack('<I', len(request)) + request
 
+        print("Sending buffer: " + full_request.hex())
+
         response = self._connection.execute(full_request)
         resp_header = response.unpack('<4s')[0]
         assert req_header == resp_header, f'req={req_header.hex()} resp={resp_header.hex()}'
@@ -136,6 +142,7 @@ class RadiaCode:
 
     def write_request(self, command_id: int | VSFR, data: Optional[bytes] = None) -> None:
         r = self.execute(COMMAND.WR_VIRT_SFR, struct.pack('<I', int(command_id)) + (data or b''))
+        print("retcode: ", r.data().hex())
         retcode = r.unpack('<I')[0]
         assert retcode == 1
         assert r.size() == 0

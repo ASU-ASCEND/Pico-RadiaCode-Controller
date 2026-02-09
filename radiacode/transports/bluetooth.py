@@ -175,6 +175,7 @@ class Bluetooth:
 
             if value_handle == self._notify_fd_handle:
                 # print("notify handle")
+                print(notify_data.hex())
                 pass
 
             if value_handle == self._write_fd_handle:
